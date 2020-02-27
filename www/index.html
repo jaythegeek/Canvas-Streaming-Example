@@ -23,7 +23,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('[data-action="goLive"]').addEventListener('click', (e) => {
-        var streamUrl = 'rtmp://a.rtmp.youtube.com/live2/9cvm-y9r0-dd07-970e';
+        var streamUrl = 'rtmp://a.rtmp.youtube.com/live2/5ehy-d47k-bh3s-d7f4';
         let mediaRecorder;
         let mediaStream;
 
@@ -36,63 +36,43 @@
         );
 
 
-        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
-          .then(function (stream) {
-            var cameraStream = stream;
+        ws.addEventListener('open', (e) => {
+          console.log('WebSocket Open', e);
 
-            ws.addEventListener('open', (e) => {
-              console.log('WebSocket Open', e);
-
-              // let combined = new MediaStream([...videoStream.getTracks(), ...audioStream.getTracks()]);
-              // let recorder = new MediaRecorder(combined);
+          // let combined = new MediaStream([...videoStream.getTracks(), ...audioStream.getTracks()]);
+          // let recorder = new MediaRecorder(combined);
 
 
 
-              mediaStream = document.querySelector('canvas').captureStream(30); // 30 FPS
+          mediaStream = document.querySelector('canvas').captureStream(30); // 30 FPS
 
-              if (cameraStream) {
-                let combined = new MediaStream([...cameraStream.getTracks(), ...mediaStream.getTracks()]);
-                mediaRecorder = new MediaRecorder(combined, {
-                  mimeType: 'video/webm;codecs=h264',
-                  videoBitsPerSecond: 3000000
-                });
-              } else {
-                mediaRecorder = new MediaRecorder(mediaStream, {
-                  mimeType: 'video/webm;codecs=h264',
-                  videoBitsPerSecond: 3000000
-                });
-              }
-
-
-
-              mediaRecorder.addEventListener('dataavailable', (e) => {
-                ws.send(e.data);
-              });
-
-              mediaRecorder.addEventListener('stop', ws.close.bind(ws));
-
-              mediaRecorder.start(1000); // Start recording, and dump data every second
-              // var video = document.querySelector('video');
-              // if ("srcObject" in video) {
-              //   video.srcObject = stream;
-              // } else {
-              //   video.src = window.URL.createObjectURL(stream);
-              // }
-              // video.onloadedmetadata = function (e) {
-              //   video.play();
-              // };
-            })
-              .catch(function (err) {
-                console.log(err.name + ": " + err.message);
-              });
-
-
-
-
-
-
-
+          mediaRecorder = new MediaRecorder(mediaStream, {
+            mimeType: 'video/webm;codecs=h264',
+            videoBitsPerSecond: 3000000
           });
+
+
+
+
+          mediaRecorder.addEventListener('dataavailable', (e) => {
+            ws.send(e.data);
+          });
+
+          mediaRecorder.addEventListener('stop', ws.close.bind(ws));
+
+          mediaRecorder.start(1000); // Start recording, and dump data every second
+          // var video = document.querySelector('video');
+          // if ("srcObject" in video) {
+          //   video.srcObject = stream;
+          // } else {
+          //   video.src = window.URL.createObjectURL(stream);
+          // }
+          // video.onloadedmetadata = function (e) {
+          //   video.play();
+          // };
+        })
+
+
 
         ws.addEventListener('close', (e) => {
           console.log('WebSocket Close', e);
