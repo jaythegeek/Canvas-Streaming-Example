@@ -41,7 +41,7 @@ wss.on('connection', (ws) => {
 
   // Launch FFmpeg to handle all appropriate transcoding, muxing, and RTMP
   const ffmpeg = child_process.spawn('ffmpeg', [
-    '-threads', '4',
+
     // Facebook requires an audio track, so we create a silent one here.
     // Remove this line, as well as `-shortest`, if you send audio from the browser.
     '-f', 'lavfi', '-i', 'anullsrc',
@@ -60,13 +60,13 @@ wss.on('connection', (ws) => {
     // or similar to transcode it to H.264 here on the server.
     '-vcodec', 'libx264',
     '-preset', 'ultrafast',
-    '-vb', '15M',
+    '-crf', '15',
+    '-b:v', '15M',
     '-r', '30',
-    '-minrate', '2M',
     '-maxrate', '2M',
     '-bufsize', '4M',
-
-
+    '-threads', '4',
+    '-cpu-used', '0',
 
 
     // AAC audio is required for Facebook Live.  No browser currently supports
