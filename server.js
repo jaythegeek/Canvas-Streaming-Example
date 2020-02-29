@@ -41,47 +41,21 @@ wss.on('connection', (ws) => {
 
   // Launch FFmpeg to handle all appropriate transcoding, muxing, and RTMP
   const ffmpeg = child_process.spawn('ffmpeg', [
-
-    // Facebook requires an audio track, so we create a silent one here.
-    // Remove this line, as well as `-shortest`, if you send audio from the browser.
-    '-f', 'lavfi', '-i', 'anullsrc',
-    '-re',
-    // FFmpeg will read input video from STDIN
+    '-y', '-r', '4.2',
     '-i', '-',
-
-    // Because we're using a generated audio source which never ends,
-    // specify that we'll stop at end of other input.  Remove this line if you
-    // send audio from the browser.
+    '-re',
+    '-f', 'lavfi', '-i', 'anullsrc',
     '-shortest',
-
-    // If we're encoding H.264 in-browser, we can set the video codec to 'copy'
-    // so that we don't waste any CPU and quality with unnecessary transcoding.
-    // If the browser doesn't support H.264, set the video codec to 'libx264'
-    // or similar to transcode it to H.264 here on the server.
-    '-vcodec', 'libx264',
-    '-preset', 'ultrafast',
-    '-crf', '15',
-    '-b:v', '15M',
-    '-r', '30',
-    '-maxrate', '2M',
-    '-bufsize', '4M',
-    '-threads', '4',
-    '-cpu-used', '0',
-
-
-    // AAC audio is required for Facebook Live.  No browser currently supports
-    // encoding AAC, so we must transcode the audio to AAC here on the server.
-
-    '-vf', 'format=yuv420p',
-
-    // '-acodec', 'aac', '-ab', '128k', '-ar', '44100',
-
-    // FLV is the container format used in conjunction with RTMP
+    '-c:v', 'libx264',
+    '-preset', 'fast',
+    '-vf', 'scale=1920:1080,format=yuv420p',
+    '-crf', '1',
+    '-bufsize', '5000k',
+    '-maxrate', '2500k',
+    // '-c:a', 'aac',
+    
     '-f', 'flv',
 
-    // The output RTMP URL.
-    // For debugging, you could set this to a filename like 'test.flv', and play
-    // the resulting file with VLC.
     rtmpUrl
   ]);
 
