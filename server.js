@@ -41,17 +41,16 @@ wss.on('connection', (ws) => {
 
   // Launch FFmpeg to handle all appropriate transcoding, muxing, and RTMP
   const ffmpeg = child_process.spawn('ffmpeg', [
-    '-y', '-r', '4.2',
+    // '-y', '-r', '4.2',
     '-i', '-',
     '-re',
+    // '-vsync', '0',
     '-f', 'lavfi', '-i', 'anullsrc',
     '-shortest',
     '-c:v', 'libx264',
-    '-preset', 'fast',
-    '-vf', 'scale=1920:1080,format=yuv420p',
-    '-crf', '1',
-    '-bufsize', '5000k',
-    '-maxrate', '2500k',
+    '-preset', 'veryfast',
+    '-crf', '10',
+    
     // '-c:a', 'aac',
     
     '-f', 'flv',
