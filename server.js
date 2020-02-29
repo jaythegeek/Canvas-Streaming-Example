@@ -48,8 +48,8 @@ wss.on('connection', (ws) => {
     '-f', 'lavfi', '-i', 'anullsrc',
     '-shortest',
     '-c:v', 'libx264',
-    '-preset', 'veryfast',
-    '-crf', '10',
+    '-preset', 'faster',
+    '-crf', '12',
     
     // '-c:a', 'aac',
     
